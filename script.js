@@ -238,44 +238,59 @@
 
 
         // form
+        // --- EmailJS Integration ---
+            emailjs.init("jH1UyzWKrxbXrk27G"); // Initialize EmailJS with your Public Key
 
-        const bookingForm = document.getElementById('booking-form'); // Get the form by its new ID
+            const bookingForm = document.getElementById('booking-form');
 
-bookingForm.addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent default form submission
+            bookingForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
 
-    // Display a loading message
-    const submitButton = this.querySelector('.btn');
-    const originalButtonText = submitButton.textContent;
-    submitButton.textContent = 'Sending...';
-    submitButton.disabled = true;
+                // Display a loading message
+                const submitButton = this.querySelector('.btn');
+                const originalButtonText = submitButton.textContent;
+                submitButton.textContent = 'Sending...';
+                submitButton.disabled = true;
 
-    // Collect form data using the form element directly
-    const formData = {
-        name: this.name.value,
-        email: this.email.value,
-        phone: this.phone.value,
-        event_type: this['event-type'].value, // Use bracket notation for names with hyphens
-        event_date: this['event-date'].value,
-        guests: this.guests.value,
-        message: this.message.value
-    };
+                // Collect form data. The 'name' attribute of each input/select/textarea
+                // should match the variable names in your EmailJS template.
+                const formData = {
+                    name: this.name.value,
+                    email: this.email.value,
+                    phone: this.phone.value,
+                    'event-type': this['event-type'].value, // Corrected key to match HTML name attribute
+                    'event-date': this['event-date'].value, // Corrected key to match HTML name attribute
+                    guests: this.guests.value,
+                    message: this.message.value
+                };
 
-    // Send the email using EmailJS
-    emailjs.send('service_q23kxse', 'template_s85e6uj', formData) // Replace with your IDs
-        .then(function(response) {
-            console.log('SUCCESS!', response.status, response.text);
-            // Show success message to user
-            alert('Your booking request has been sent successfully!');
-            bookingForm.reset(); // Clear the form
-        }, function(error) {
-            console.log('FAILED...', error);
-            // Show error message to user
-            alert('Failed to send your booking request. Please try again later.');
-        })
-        .finally(() => {
-            submitButton.textContent = originalButtonText;
-            submitButton.disabled = false;
-        });
-});
-   
+                // Send the primary email to your catering service
+                emailjs.send('service_q23kxse', 'template_n792mxc', formData) // Your Service ID and Primary Template ID
+                    .then(function(response) {
+                        console.log('Primary email SUCCESS!', response.status, response.text);
+
+                        // --- Send Auto-Reply Email to the User ---
+                        // Use the same formData as it contains the user's email and name
+                        // Replace 'YOUR_AUTO_REPLY_TEMPLATE_ID' with your actual auto-reply template ID
+                        emailjs.send('service_q23kxse', 'template_s85e6uj', formData)
+                            .then(function(autoReplyResponse) {
+                                console.log('Auto-reply SUCCESS!', autoReplyResponse.status, autoReplyResponse.text);
+                                alert('Your booking request has been sent successfully! A confirmation email has been sent to your inbox.');
+                                bookingForm.reset(); // Clear the form after successful submission
+                            }, function(autoReplyError) {
+                                console.log('Auto-reply FAILED...', autoReplyError);
+                                // Even if auto-reply fails, the primary email likely went through.
+                                alert('Your booking request has been sent, but we had trouble sending a confirmation email. We will still get back to you!');
+                            });
+
+                    }, function(error) {
+                        console.log('Primary email FAILED...', error);
+                        alert('Failed to send your booking request. Please try again later.');
+                    })
+                    .finally(() => {
+                        // Re-enable the button and restore its text
+                        submitButton.textContent = originalButtonText;
+                        submitButton.disabled = false;
+                    });
+            });
+      
