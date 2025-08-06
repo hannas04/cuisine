@@ -235,4 +235,47 @@
             const bookingBgObserver = new IntersectionObserver(observerCallback, observerOptions);
             bookingBgObserver.observe(bookingBackgroundImagesContainer);
         });
+
+
+        // form
+
+        const bookingForm = document.getElementById('booking-form'); // Get the form by its new ID
+
+bookingForm.addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Display a loading message
+    const submitButton = this.querySelector('.btn');
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = 'Sending...';
+    submitButton.disabled = true;
+
+    // Collect form data using the form element directly
+    const formData = {
+        name: this.name.value,
+        email: this.email.value,
+        phone: this.phone.value,
+        event_type: this['event-type'].value, // Use bracket notation for names with hyphens
+        event_date: this['event-date'].value,
+        guests: this.guests.value,
+        message: this.message.value
+    };
+
+    // Send the email using EmailJS
+    emailjs.send('service_q23kxse', 'template_s85e6uj', formData) // Replace with your IDs
+        .then(function(response) {
+            console.log('SUCCESS!', response.status, response.text);
+            // Show success message to user
+            alert('Your booking request has been sent successfully!');
+            bookingForm.reset(); // Clear the form
+        }, function(error) {
+            console.log('FAILED...', error);
+            // Show error message to user
+            alert('Failed to send your booking request. Please try again later.');
+        })
+        .finally(() => {
+            submitButton.textContent = originalButtonText;
+            submitButton.disabled = false;
+        });
+});
    

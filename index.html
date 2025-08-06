@@ -9,6 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Mrs+Sheppards&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "jH1UyzWKrxbXrk27G",
+      });
+   })();
+</script
 </head>
 <body>
     <!-- Animated Background Lines -->
@@ -243,7 +253,7 @@
             <div class="booking-background-images">
                 <!-- Small background images will be dynamically added here by JS -->
             </div>
-            <form class="booking-form section-content">
+            <form class="booking-form section-content" id="booking-form">
                 <div class="form-group">
                     <label for="name">Your Name:</label>
                     <input type="text" id="name" name="name" placeholder="John Doe" required>
