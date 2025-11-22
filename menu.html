@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Catering Menu Builder</title>
+    <!-- Load Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+     <link href="https://fonts.googleapis.com/css2?family=Mrs+Sheppards&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        /* --- CORE STYLES & VARIABLES --- */
+        :root {
+            --primary-color: #E53E3E; /* Red-600 */
+            --primary-shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --primary-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --text-dark: #1F2937;
+            --text-medium: #4B5563;
+            --bg-light: #fefefe;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8; /* Light gray background for contrast */
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+        
+        /* Utility Classes */
+        .primary-text { color: var(--primary-color); }
+
+        /* --- LAYOUT STRUCTURE --- */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem; /* p-4 */
+        }
+
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Default to single column (mobile) */
+            gap: 3rem; /* gap-12 */
+            padding: 2rem 1rem;
+        }
+        
+        /* Large screen layout (lg:grid-cols-3) */
+        @media (min-width: 1024px) {
+            .main-content-grid {
+                grid-template-columns: 2fr 1fr; /* Menu (2/3) and Receipt (1/3) */
+                padding: 3rem 1rem;
+            }
+        }
+
+        .menu-section {
+            transition: opacity 0.3s ease;
+        }
+        .menu-section.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .receipt-aside {
+            position: sticky;
+            top: 5rem; 
+            align-self: flex-start;
+            transition: all 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            box-shadow: var(--primary-shadow-sm);
+            background-color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        header .container {
+            padding: 1.5rem 1rem;
+            text-align: center;
+        }
+          .navbar {
+            background-color: #ff0000;
+            padding: 15px 25px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: #bb0c0c;
+            font-size: 1.6em;
+            font-weight: 400;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+         font-family: 'mrs sheppards', sans-serif;
+        }
+        header p {
+            font-size: 0.95rem;
+            color: var(--text-medium);
+            margin-top: 0.25rem;
+        }
+
+        /* --- TABS & MENU --- */
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+        .section-title i {
+            margin-right: 0.75rem;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .tab-button {
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+            color: var(--text-medium);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+        }
+        .tab-button:hover {
+            color: var(--primary-color);
+        }
+        .tab-button.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            transform: translateY(-2px);
+        }
+        .tab-button i {
+            margin-right: 0.5rem;
+        }
+
+        .food-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        @media (min-width: 640px) {
+            .food-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 768px) {
+            .food-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .food-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: var(--primary-shadow-sm);
+            border: 1px solid #F3F4F6;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+        }
+        .food-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--primary-shadow-lg);
+        }
+        .food-card img {
+            width: 100%;
+            height: 10rem;
+            object-fit: cover;
+        }
+        .food-card .content {
+            padding: 1rem;
+            flex-grow: 1;
+        }
+        .food-card h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+        .food-card p {
+            color: var(--text-medium);
+            font-size: 0.875rem;
+        }
+        .food-card .footer {
+            padding: 1rem;
+            padding-top: 0;
+            border-top: 1px solid #F3F4F6;
+        }
+        
+        /* Checkbox custom styling */
+        .checkbox-label {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+            transform: scale(1);
+        }
+        .custom-checkbox:checked + .checkbox-label {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .custom-checkbox:checked + .checkbox-label i {
+            color: white;
+        }
+        .custom-checkbox {
+            display: none;
+        }
+        .checkbox-label i {
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+        .custom-checkbox:checked + .checkbox-label i {
+            opacity: 1;
+        }
+
+        /* --- RECEIPT STYLES (Standard, Spacious View) --- */
+        .receipt-container {
+            background-color: white;
+            padding: 2rem; /* Generous padding for standard view */
+            border-radius: 0.75rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 4px dashed #CBD5E0;
+            transition: all 0.5s ease;
+        }
+        .receipt-header {
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 2px dashed #E5E7EB;
+            margin-bottom: 1.5rem;
+        }
+        .receipt-header h2 {
+            font-size: 2rem; /* Larger font in standard view */
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+        .receipt-header p {
+            font-size: 0.875rem;
+            color: var(--text-medium);
+            margin-top: 0.25rem;
+        }
+        .form-section {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Spacious gap between form groups */
+        }
+        .form-group {
+            /* Handled by form-section gap */
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-medium);
+            margin-bottom: 0.25rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.65rem; /* Spacious padding */
+            border: 1px solid #D1D5DB;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.3);
+        }
+
+        .summary-title {
+            font-size: 1.25rem; /* Larger list title */
+            font-weight: 700;
+            color: var(--primary-color);
+            border-bottom: 1px solid #D1D5DB;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .summary-list {
+            font-size: 1rem; /* Standard font size for list */
+            min-height: 50px;
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .summary-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.25rem 0;
+        }
+        .summary-list li i {
+            color: #10B981;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Caution Note */
+        .caution-note {
+            background-color: #FEF2F2; 
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .caution-note h4 {
+            font-size: 1rem; 
+            font-weight: 700;
+            color: #B91C1C;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+        .caution-note h4 i {
+            margin-right: 0.5rem;
+        }
+        .caution-note p {
+            font-size: 0.875rem; /* Standard size for note */
+            color: #991B1B; 
+        }
+
+        /* --- CTA BUTTON --- */
+        .cta-button {
+            width: 100%;
+            padding: 1rem; /* Spacious padding */
+            border-radius: 0.5rem;
+            font-weight: 700;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: scale(1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+        }
+        .cta-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .cta-button:not(:disabled):hover {
+            opacity: 0.9;
+            transform: scale(1.01);
+            cursor: pointer;
+        }
+        .cta-button i {
+            margin-right: 0.5rem;
+        }
+
+        /* --- SCREENSHOT MODE (CRITICAL FOR FIT) --- */
+        /* This section overrides the standard styles above to make everything compact */
+        .receipt-aside.screenshot-view {
+            grid-column: 1 / -1; 
+            margin: 0 auto;
+            max-width: 42rem; 
+            position: static; 
+        }
+        
+        .main-content-grid.screenshot-mode-grid {
+             display: flex;
+             justify-content: center;
+             align-items: flex-start; /* Start aligns content to top of screen */
+             padding: 0.5rem;
+             min-height: 100vh;
+        }
+        
+        /* The .screenshot-mode class applies compact styling to the receipt content */
+        .receipt-container.screenshot-mode {
+            padding: 0.8rem; /* Highly reduced overall padding */
+            height: 100%;
+        }
+
+        .screenshot-mode .receipt-header h2 {
+            font-size: 1.2rem; /* Smallest header */
+        }
+        .screenshot-mode .receipt-header p {
+            font-size: 0.65rem; 
+        }
+        .screenshot-mode .receipt-header {
+            margin-bottom: 0.5rem;
+        }
+        
+        .screenshot-mode .form-section {
+            gap: 0.3rem; /* Tiny gap for form groups */
+        }
+
+        .screenshot-mode .form-label {
+            font-size: 0.6rem; /* Smallest label font */
+        }
+
+        .screenshot-mode .form-input {
+            padding: 0.25rem; /* Smallest input padding */
+            font-size: 0.75rem; 
+            border-radius: 0.3rem;
+        }
+
+        .screenshot-mode .summary-title {
+            font-size: 0.9rem; /* Smaller list header */
+            margin-top: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .screenshot-mode .summary-list {
+            font-size: 0.7rem; /* Smallest list font */
+            gap: 0.2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .screenshot-mode .caution-note {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .screenshot-mode .caution-note h4 {
+            font-size: 0.7rem;
+        }
+        .screenshot-mode .caution-note p {
+            font-size: 0.55rem; /* Extremely small text for note */
+        }
+        .screenshot-mode .cta-button {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        /* --- MODAL STYLES (Kept simple and clean) --- */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: opacity 0.3s ease;
+        }
+        .modal-backdrop.hidden {
+            display: none;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 32rem;
+            width: 90%;
+            transform: scale(0.95);
+            transition: transform 0.5s;
+        }
+        .modal-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10B981;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        .modal-content .highlight {
+            font-weight: 700;
+            font-size: 1.125rem;
+            text-align: center;
+            background-color: #FEF9C3;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        .modal-content ol {
+            list-style-type: decimal;
+            list-style-position: inside;
+            color: #4B5563;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            padding-left: 0.5rem;
+        }
+        .modal-content textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 0.5rem;
+            background-color: #F9FAFB;
+            font-size: 0.875rem;
+            height: 8rem;
+            margin-bottom: 1.5rem;
+            resize: none;
+            cursor: pointer;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .whatsapp-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            color: white;
+            background-color: #10B981;
+            border: none;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        .whatsapp-btn:hover {
+            background-color: #059669;
+            cursor: pointer;
+        }
+        .whatsapp-btn i {
+            margin-right: 0.5rem;
+        }
+        .close-btn {
+            color: #6B7280;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+        }
+        .close-btn:hover {
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Header -->
+    <header>
+        
+        <div class="container">
+             <a href="#top" class="navbar-brand"><span>Cuisine</span> <span> Fantastique</span></a>
+        </div>
+    </header>
+
+    <main class="container main-content-grid" id="main-content-grid">
+        
+        <!-- Menu Section -->
+        <section class="menu-section" id="menu-section">
+           
+            <h2 class="section-title">
+                <i class="fas fa-utensils primary-text"></i> 1. Choose Your Items
+            </h2>
+
+            <!-- Category Tabs -->
+            <div id="category-tabs" class="tabs">
+                <!-- Tabs will be generated here -->
+            </div>
+
+            <!-- Food Display Area -->
+            <div id="food-list" class="food-list">
+                <!-- Food cards will be injected here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Order Summary & Details Section -->
+        <aside class="receipt-aside" id="receipt-aside">
+            <div id="receipt-area" class="receipt-container">
+                
+                <!-- Receipt Header -->
+                <div class="receipt-header">
+                    <h2>FANTASIA QUOTE REQUEST</h2>
+                    <p>Event Details & Menu Selection</p>
+                </div>
+                
+                <!-- Event Details Form for Receipt -->
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="event-date" class="form-label">Date of Party</label>
+                        <input type="date" id="event-date" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="guest-count" class="form-label">Number of Guests</label>
+                        <input type="number" id="guest-count" required min="10" placeholder="Minimum 10" class="form-input">
+                    </div>
+
+                    <!-- Delivery Location Area Dropdown -->
+                    <div class="form-group">
+                        <label for="delivery-location" class="form-label">Delivery Location Area</label>
+                        <select id="delivery-location" required class="form-input">
+                            <option value="" disabled selected>Select Area</option>
+                            <option value="Mainland">Lagos Mainland</option>
+                            <option value="Island">Lagos Island</option>
+                            <option value="Outside Lagos">Outside Lagos (Extra Fee Applies)</option>
+                        </select>
+                    </div>
+
+                    <!-- Event Address/Hall Name Input -->
+                    <div class="form-group">
+                        <label for="event-address" class="form-label">Event Hall Name / Address</label>
+                        <input type="text" id="event-address" required placeholder="e.g., The Landmark Event Centre" class="form-input">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="user-email" class="form-label">Your Email</label>
+                        <input type="email" id="user-email" required placeholder="name@example.com" class="form-input">
+                    </div>
+                </div>
+
+                <!-- Selected Items List -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 class="summary-title" style="margin-top: 1rem;">Menu Items:</h3>
+                    <ul id="selected-items-summary" class="summary-list">
+                        <li style="text-align: center; color: #9CA3AF; font-style: italic; padding: 0.5rem 0;" id="empty-cart-message">No items selected yet.</li>
+                    </ul>
+                </div>
+
+                <!-- Caution Note -->
+                <div class="caution-note">
+                    <h4>
+                        <i class="fas fa-exclamation-triangle"></i> IMPORTANT CAUTION NOTE
+                    </h4>
+                    <p>
+                        This document is a *request for a quote only* and is **NOT a final confirmed order**. Availability and final pricing must be confirmed by a FANTASIA representative.
+                    </p>
+                </div>
+
+                <!-- Final Call to Action -->
+                <button id="generate-receipt-btn" disabled class="cta-button">
+                    <i class="fas fa-camera-retro"></i> GENERATE QUOTE SCREENSHOT
+                </button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Modal for Share Instructions -->
+    <div id="share-modal" class="modal-backdrop hidden">
+        <div class="modal-content" id="modal-content">
+            <h3 style="color: #10B981;">
+                <i class="fab fa-whatsapp" style="margin-right: 0.5rem;"></i> Share Your Order
+            </h3>
+            <p class="highlight">
+                PLEASE TAKE A SCREENSHOT OF THE RECEIPT NOW.
+            </p>
+            
+            <ol>
+                <li>Take a screenshot of the **FANTASIA QUOTE REQUEST** currently visible on your screen.</li>
+                <li>Click the **WhatsApp button** below to start a chat with the caterer.</li>
+                <li>**Attach the screenshot image** in the chat, along with the pre-filled text below:</li>
+            </ol>
+
+            <textarea id="whatsapp-message-body" readonly onclick="this.select(); document.execCommand('copy');"></textarea>
+            
+            <div class="modal-footer">
+                <button id="whatsapp-share-btn" class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i> Open WhatsApp Chat
+                </button>
+                <button id="close-modal-btn" class="close-btn">
+                    Start New Quote
+                </button>
+            </div>
+            <p style="font-size: 0.75rem; text-align: center; color: #9CA3AF; margin-top: 1rem;">
+                *The button will open a chat with the catering line.*
+            </p>
+        </div>
+    </div>
+
+
+    <script>
+        // --- DATA STRUCTURE (Prices are removed) ---
+        const menuData = {
+            "Burgers": [
+                { id: 'b1', name: "Classic Cheeseburger", desc: "A timeless favorite with sharp cheddar and house sauce.", img: "img/chips.jpg" },
+                { id: 'b2', name: "Spicy Chicken Burger", desc: "Crispy chicken fillet with fiery sriracha mayo and jalapenos.", img: "img/chicken kebab.jpg" },
+                { id: 'b3', name: "Veggie Delight", desc: "Plant-based patty with fresh avocado and sun-dried tomatoes.", img: "img/dish1-300x300.png" },
+                { id: 'b4', name: "Double Bacon BBQ", desc: "Two beef patties, crispy bacon, and smoky BBQ sauce.", img: "img/dish2-300x300.png" },
+            ],
+            "Sides & Fries": [
+                { id: 's1', name: "Crispy French Fries", desc: "Golden perfection, lightly salted. Served with ketchup.", img: "img/dish3-300x300.png" },
+                { id: 's2', name: "Onion Rings", desc: "Thick-cut, battered onion rings, fried till crisp.", img: "https://placehold.co/400x300/ECC94B/333333?text=Rings" },
+                { id: 's3', name: "Mozzarella Sticks", desc: "Melted mozzarella, deep-fried, served with marinara.", img: "https://placehold.co/400x300/4FD1C5/333333?text=Sticks" },
+            ],
+            "Drinks & Shakes": [
+                { id: 'd1', name: "Assorted Cans of Soda", desc: "The classic carbonated beverage selection.", img: "https://placehold.co/400x300/E53E3E/FFFFFF?text=Soda" },
+                { id: 'd2', name: "Gourmet Milkshakes (Chocolate)", desc: "Thick, creamy chocolate shake.", img: "https://placehold.co/400x300/FBBF24/333333?text=Shake" },
+                { id: 'd3', name: "Bottled Water (Large)", desc: "Still mineral water for all guests.", img: "https://placehold.co/400x300/CBD5E0/333333?text=Water" },
+            ],
+            "Desserts": [
+                { id: 'ds1', name: "Apple Pie Bites", desc: "Warm, cinnamon-spiced apple filling in flaky pastry.", img: "https://placehold.co/400x300/81C784/333333?text=Pie" },
+                { id: 'ds2', name: "Chocolate Chip Cookies", desc: "Chewy, oven-fresh chocolate chip cookies (3 pack).", img: "https://placehold.co/400x300/B85E3D/FFFFFF?text=Cookies" },
+            ]
+        };
+        
+        // State management
+        const selectedItems = {};
+        let currentCategory = Object.keys(menuData)[0];
+        
+        // --- DOM Elements ---
+        const mainGrid = document.getElementById('main-content-grid');
+        const menuSection = document.getElementById('menu-section');
+        const receiptAside = document.getElementById('receipt-aside');
+        const tabsContainer = document.getElementById('category-tabs');
+        const foodListContainer = document.getElementById('food-list');
+        const summaryList = document.getElementById('selected-items-summary');
+        const generateReceiptBtn = document.getElementById('generate-receipt-btn');
+        const receiptArea = document.getElementById('receipt-area');
+        const emptyCartMsg = document.getElementById('empty-cart-message');
+        const dateInput = document.getElementById('event-date');
+        const guestInput = document.getElementById('guest-count');
+        const emailInput = document.getElementById('user-email');
+        const deliveryLocationSelect = document.getElementById('delivery-location');
+        const eventAddressInput = document.getElementById('event-address');
+        const shareModal = document.getElementById('share-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const whatsappShareBtn = document.getElementById('whatsapp-share-btn');
+        const whatsappMessageBody = document.getElementById('whatsapp-message-body');
+
+
+        // --- UTILITIES ---
+        
+        /**
+         * Simple function to check if all required inputs are filled.
+         */
+        function validateInputs() {
+            const date = dateInput.value;
+            const guests = guestInput.value;
+            const email = emailInput.value;
+            const location = deliveryLocationSelect.value;
+            const address = eventAddressInput.value;
+
+            return date && guests && email && location && address;
+        }
+
+        // --- RENDERING FUNCTIONS ---
+        
+        /**
+         * Renders the category buttons and attaches click handlers.
+         */
+        function renderTabs() {
+            tabsContainer.innerHTML = '';
+            Object.keys(menuData).forEach(category => {
+                const button = document.createElement('button');
+                let icon = '';
+                if (category === "Burgers") icon = '<i class="fas fa-hamburger" style="margin-right: 0.5rem;"></i>';
+                else if (category === "Sides & Fries") icon = '<i class="fas fa-french-fries" style="margin-right: 0.5rem;"></i>';
+                else if (category === "Drinks & Shakes") icon = '<i class="fas fa-cocktail" style="margin-right: 0.5rem;"></i>';
+                else if (category === "Desserts") icon = '<i class="fas fa-ice-cream" style="margin-right: 0.5rem;"></i>';
+
+                button.innerHTML = icon + category;
+                button.className = 'tab-button';
+                
+                if (category === currentCategory) {
+                    button.classList.add('active');
+                }
+
+                button.addEventListener('click', () => {
+                    currentCategory = category;
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    renderFoodList();
+                });
+                tabsContainer.appendChild(button);
+            });
+        }
+
+        /**
+         * Renders the food items for the current category.
+         */
+        function renderFoodList() {
+            foodListContainer.style.opacity = 0;
+            foodListContainer.style.transition = 'opacity 0.3s ease';
+
+            setTimeout(() => {
+                foodListContainer.innerHTML = '';
+                const items = menuData[currentCategory];
+
+                items.forEach(item => {
+                    const isChecked = selectedItems.hasOwnProperty(item.id);
+                    
+                    const card = document.createElement('div');
+                    card.id = `card-${item.id}`;
+                    card.className = 'food-card';
+                    card.innerHTML = `
+                        <div class="image-container">
+                            <img src="${item.img}" alt="${item.name}" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E53E3E/FFFFFF?text=${item.name.replace(/\s/g, '+')}'">
+                        </div>
+                        <div class="content">
+                            <h4>${item.name}</h4>
+                            <p>${item.desc}</p>
+                        </div>
+                        <div class="footer">
+                            <label for="item-${item.id}" style="display: flex; align-items: center; cursor: pointer; user-select: none;">
+                                <input type="checkbox" id="item-${item.id}" data-id="${item.id}"
+                                    class="custom-checkbox" ${isChecked ? 'checked' : ''}>
+                                <div class="checkbox-label" style="margin-right: 0.5rem;">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <span style="color: var(--text-dark); font-weight: 600; font-size: 1rem;">Select for Quote</span>
+                            </label>
+                        </div>
+                    `;
+
+                    const checkbox = card.querySelector(`#item-${item.id}`);
+                    checkbox.addEventListener('change', (e) => handleItemSelection(e, item));
+                    
+                    foodListContainer.appendChild(card);
+                });
+
+                foodListContainer.style.opacity = 1;
+            }, 100);
+        }
+        
+        /**
+         * Updates the live receipt summary in the sidebar.
+         */
+        function updateSummary() {
+            const selectedIds = Object.keys(selectedItems);
+            summaryList.innerHTML = '';
+
+            const isValid = selectedIds.length > 0 && validateInputs();
+
+            if (selectedIds.length === 0) {
+                emptyCartMsg.classList.remove('hidden');
+            } else {
+                emptyCartMsg.classList.add('hidden');
+                
+                selectedIds.forEach(id => {
+                    const item = selectedItems[id];
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <div style="display: flex; align-items: center;">
+                            <i class="fas fa-check-circle" style="color: #10B981; font-size: 1rem; margin-right: 0.5rem;"></i>
+                            <span style="color: var(--text-dark); font-weight: 500;">${item.name}</span>
+                        </div>
+                    `;
+                    summaryList.appendChild(listItem);
+                });
+            }
+
+            // Update button state based on validation
+            const button = generateReceiptBtn;
+            if (isValid) {
+                button.disabled = false;
+                button.style.opacity = 1;
+                button.style.cursor = 'pointer';
+            } else {
+                button.disabled = true;
+                button.style.opacity = 0.5;
+                button.style.cursor = 'not-allowed';
+            }
+        }
+
+        /**
+         * Resets the application state after submission and restores the view.
+         */
+        function resetApp() {
+            // 1. Restore layout (show menu, reset receipt aside width)
+            menuSection.classList.remove('hidden');
+            receiptAside.classList.remove('screenshot-view');
+            mainGrid.classList.remove('screenshot-mode-grid');
+            mainGrid.style.display = 'grid'; // Restore grid for LG screens
+            
+            // REMOVE screenshot mode class (CSS utility)
+            receiptArea.classList.remove('screenshot-mode'); 
+
+            // 2. Clear Form Inputs
+            dateInput.value = '';
+            guestInput.value = '';
+            emailInput.value = '';
+            deliveryLocationSelect.value = '';
+            eventAddressInput.value = '';
+
+            // 3. Clear Selected Items
+            for (const key in selectedItems) {
+                delete selectedItems[key];
+            }
+            
+            // 4. Uncheck all checkboxes in the menu
+            document.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // 5. Update the summary and button state
+            updateSummary();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        /**
+         * Handles the main button click: generates the view and opens the modal.
+         */
+        function handleGenerateAndShare() {
+            if (!validateInputs() || Object.keys(selectedItems).length === 0) {
+                return;
+            }
+
+            // 1. Modify Layout for Screenshot View (Hide menu, expand receipt)
+            menuSection.classList.add('hidden');
+            receiptAside.classList.add('screenshot-view');
+            
+            // Apply full-screen centering and padding removal
+            mainGrid.style.display = 'flex';
+            mainGrid.classList.add('screenshot-mode-grid');
+            
+            // ADD screenshot mode class (CSS utility)
+            receiptArea.classList.add('screenshot-mode');
+            
+            // Scroll to the top of the receipt area for a clear screenshot
+            receiptAside.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // 2. Prepare WhatsApp message text
+            const date = dateInput.value;
+            const guests = guestInput.value;
+            const email = emailInput.value;
+            const location = deliveryLocationSelect.value;
+            const address = eventAddressInput.value;
+            const selectedList = Object.values(selectedItems).map(item => `* ${item.name}`).join('\n');
+            
+            const messageText = `
+*CATERING QUOTE REQUEST - FANTASIA*
+
+*EVENT DETAILS*
+- Date: ${date}
+- Guests: ${guests}
+- Location Area: ${location}
+- Hall/Address: ${address}
+- Contact Email: ${email}
+
+*SELECTED MENU ITEMS:*
+${selectedList}
+
+_Please review the attached screenshot (the quote request image) and confirm availability and final pricing. Thank you!_
+            `;
+            
+            // 3. Populate modal and show it
+            whatsappMessageBody.value = messageText.trim();
+            shareModal.classList.remove('hidden');
+            const modalContent = document.getElementById('modal-content');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+
+            // 4. Set up WhatsApp Share Link
+            const whatsappNumber = "1234567890"; // REPLACE with client's WhatsApp number
+            const encodedMessage = encodeURIComponent(messageText);
+            whatsappShareBtn.onclick = () => {
+                window.open(`https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`, '_blank');
+            };
+        }
+
+        // --- EVENT HANDLERS ---
+        
+        /**
+         * Handles adding/removing an item from the selectedItems state.
+         */
+        function handleItemSelection(e, item) {
+            if (e.target.checked) {
+                selectedItems[item.id] = item;
+            } else {
+                delete selectedItems[item.id];
+            }
+            updateSummary();
+        }
+
+        // --- MODAL HANDLERS ---
+        
+        // This button now resets the app and closes the modal
+        closeModalBtn.addEventListener('click', () => {
+            shareModal.classList.add('hidden');
+            resetApp();
+        });
+
+        // Close modal when clicking outside (on the backdrop)
+        shareModal.addEventListener('click', (e) => {
+            if (e.target === shareModal) {
+                shareModal.classList.add('hidden');
+                resetApp();
+            }
+        });
+
+
+        // --- INITIALIZATION ---
+        
+        // Ensure ALL form inputs trigger validation and summary update
+        [dateInput, guestInput, emailInput, deliveryLocationSelect, eventAddressInput].forEach(input => {
+            input.addEventListener('input', updateSummary);
+        });
+
+        // Submit button listener (now handles view generation and modal display)
+        generateReceiptBtn.addEventListener('click', handleGenerateAndShare);
+
+        // Initial render
+        window.onload = function() {
+            renderTabs();
+            renderFoodList();
+            updateSummary();
+        };
+
+
+        
+
+
+            // Animated Background Images for Menu and Booking Sections
+            const menuBackgroundImagesContainer = document.querySelector('.menu-background-images');
+            const bookingBackgroundImagesContainer = document.querySelector('.booking-background-images');
+
+            // Array of image URLs for the background animations
+            const backgroundImages = [
+                'img/menu/absolute-1.jpg', /* Changed to red for visibility */
+                'img/menu/absolute-2.jpg',
+                'img/menu/absolute-3.jpg',
+                'img/menu/absolute-4.jpg',
+                'img/menu/absolute-5.jpg',
+                'img/menu/absolute-6.jpg',
+                'img/menu/absolute-1.jpg',
+                'img/menu/absolute-2.jpg',
+                'img/menu/absolute-3.jpg'
+            ];
+
+            function createAndAnimateBackgroundImages(container, count = 10, placement = 'random') {
+                const imageSizeRange = [50, 80];
+
+                for (let i = 0; i < count; i++) {
+                    const img = document.createElement('img');
+                    img.src = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+                    const size = Math.random() * (imageSizeRange[1] - imageSizeRange[0]) + imageSizeRange[0];
+                    img.style.width = `${size}px`;
+                    img.style.height = `${size}px`;
+
+                    img.style.position = 'absolute';
+                    img.style.opacity = '0';
+
+                    const topPercentage = (i / count) * 100 + (Math.random() * (100 / count) - (100 / count / 2));
+                    img.style.top = `${topPercentage}%`;
+
+                    let initialTransform = `rotate(${Math.random() * 360}deg)`;
+
+                    if (placement === 'left') {
+                        img.style.left = '0';
+                        initialTransform += ` translateX(-${size / 2}px)`;
+                    } else if (placement === 'right') {
+                        img.style.right = '0';
+                        initialTransform += ` translateX(${size / 2}px)`;
+                    } else {
+                        img.style.left = `${Math.random() * 100}%`;
+                        img.style.top = `${Math.random() * 100}%`;
+                    }
+
+                    img.style.transform = initialTransform;
+
+                    setTimeout(() => {
+                        img.style.transition = `opacity 2s ease-out, transform ${Math.random() * 10 + 5}s linear infinite alternate`;
+                        img.style.opacity = '0.9';
+
+                        let finalTransform = '';
+                        if (placement === 'left') {
+                            finalTransform = `translateX(${Math.random() * 30}px) translateY(${Math.random() * 50 - 25}px) rotate(${Math.random() * 720}deg)`;
+                        } else if (placement === 'right') {
+                            finalTransform = `translateX(-${Math.random() * 30}px) translateY(${Math.random() * 50 - 25}px) rotate(${Math.random() * 720}deg)`;
+                        } else {
+                            finalTransform = `translateY(${Math.random() * 200 - 100}px) translateX(${Math.random() * 200 - 100}px) rotate(${Math.random() * 720}deg)`;
+                        }
+                        img.style.transform = finalTransform;
+                    }, 100);
+
+                    container.appendChild(img);
+                }
+            }
+
+            createAndAnimateBackgroundImages(menuBackgroundImagesContainer, 10, 'left');
+            createAndAnimateBackgroundImages(menuBackgroundImagesContainer, 10, 'right');
+            createAndAnimateBackgroundImages(bookingBackgroundImagesContainer, 10, 'left');
+            createAndAnimateBackgroundImages(bookingBackgroundImagesContainer, 10, 'right');
+    </script>
+</body>
+</html>

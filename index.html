@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Mrs+Sheppards&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
@@ -33,14 +34,14 @@
         </div>
         <ul class="navbar-links" id="navbar-links">
             <li><a href="#top">Home</a></li>
-            <li><a href="#about">About Us</a></li>
+            <!-- <li><a href="#about">About Us</a></li>
             <li><a href="#services">Services</a></li>
-            <li><a href="#menu">Menu</a></li>
+            <li><a href="#menu">Menu</a></li> -->
             <li><a href="#gallery">Gallery</a></li>
             <li><a href="#pizza-deals">Pizza Deals</a></li>
-            <li><a href="#franchise">Franchise</a></li>
+            <!-- <li><a href="#franchise">Franchise</a></li>
             <li><a href="#testimonials">Testimonials</a></li>
-            <li><a href="#booking">Booking</a></li>
+            <li><a href="#booking">Booking</a></li> -->
             <li><a href="#contact">Contact</a></li>
         </ul>
     </nav>
@@ -49,15 +50,19 @@
         <div class="hero-content section-content">
             <h1>Cuisine Fanstatique</h1>
             <p>Experience Culinary Excellence, Indoors & Outdoors, Across Nigeria.</p>
-            <a href="#menu" class="btn">Explore Our Menu</a>
+            <div>
+                <a href="#menu" class="btn">Explore Our Menu</a>
+            <a href="menu.html" class="btn">Book</a>
+            </div>
+            
         </div>
     </header>
 
     <main>
-        <section id="about" class="about-section">
+        <section id="about" class="about-section" >
             <h2>About Us</h2>
             <div class="about-content section-content">
-                <img src="https://placehold.co/800x400/FF0000/FFFFFF?text=Our+Passionate+Team" alt="Our Team at Work">
+                <img src="img/about_img.webp" alt="Our Team at Work">
                 <p>Welcome to Savory Bites Catering, your premier choice for exceptional culinary experiences across Nigeria. We specialize in both indoor and outdoor catering, bringing delicious, hygienically prepared meals and professional service to your events.</p>
                 <p>Founded with a passion for food and a commitment to excellence, Savory Bites has grown to become a trusted name in the catering industry. Our team of experienced chefs and dedicated staff work tirelessly to ensure every dish is a masterpiece and every event is a success. From intimate gatherings to grand celebrations, we tailor our services to meet your unique needs and exceed your expectations.</p>
             </div>
@@ -66,6 +71,7 @@
         <section id="services" class="services-section">
             <h2>Our Services</h2>
             <div class="services-grid section-content">
+                 <!-- <i class="fas fa-building"></i> -->
                 <div class="service-item">
                     <h3>Indoor Catering</h3>
                     <p>Perfect for corporate events, weddings, and private parties held in halls, homes, or dedicated venues. We handle everything from setup to serving, ensuring a seamless dining experience.</p>
@@ -98,18 +104,20 @@
         <section id="gallery" class="gallery-section">
             <h2>Our Culinary Creations</h2>
             <div class="gallery-grid section-content">
-                <img src="https://placehold.co/400x300/FF0000/FFFFFF?text=Exquisite+Dish+1" alt="Delicious Food 1">
-                <img src="https://placehold.co/400x300/FF0000/FFFFFF?text=Party+Spread+2" alt="Delicious Food 2">
-                <img src="https://placehold.co/400x300/FF0000/FFFFFF?text=Fresh+Ingredients+3" alt="Delicious Food 3">
-                <img src="https://placehold.co/400x300/FF0000/FFFFFF?text=Elegant+Setup+4" alt="Delicious Food 4">
-                <img src="https://placehold.co/400x300/FF0000/FFFFFF?text=Nigerian+Delicacy+5" alt="Delicious Food 5">
-                <img src="https://placehold.co/400x300/FF0000/FFFFFF?text=Outdoor+Event+6" alt="Delicious Food 6">
+                <img src="img/gallery-2.webp" alt="Delicious Food 1">
+                <img src="img/gallery-3.webp" alt="Delicious Food 2">
+                <img src="img/gallery-4.webp" alt="Delicious Food 3">
+                <img src="img/gallery-6.webp" alt="Delicious Food 4">
+                <img src="img/gallery-7.webp" alt="Delicious Food 5">
+                <img src="img/gallery-4.webp" alt="Delicious Food 6">
             </div>
         </section>
 
         <!-- START: Pizza Deals Section (Custom CSS) -->
         <section id="pizza-deals" class="pizza-deals-section">
+            
             <div class="pizza-deals-container">
+               
                 <h2 class="pizza-deals-heading">Our special Deals</h2>
                 <div class="pizza-deals-cards">
 
@@ -121,12 +129,7 @@
                             </div>
                             <div class="pizza-card-text">
                                 <h2 class="pizza-card-title">Spicysuya package</h2>
-                                <span class="pizza-card-price">&#8358; 20,000</span>
-                                <div class="pizza-card-buttons">
-                                    <button class="pizza-card-btn pizza-card-btn-buy">
-                                     <a class="pizza-deal-buy-red" href="https://wa.me/8149449300">Buy Now</a>
-                                    </button>
-                                </div>
+                              
                             </div>
                         </div>
                     </div>
@@ -140,18 +143,24 @@
                             <div class="pizza-card-text">
                                 <!-- <div class="pizza-card-badge">SAVE 30%</div> -->
                                 <h2 class="pizza-card-subtitle">spicy asun</h2>
-                                <h3 class="pizza-card-start-price">STARTING</h3>
-                                <span class="pizza-card-price-small"> &#8358; 22,000</span>
-                                <div class="pizza-card-buttons">
-                                    <button class="pizza-card-btn pizza-card-btn-blue">
-                                        <a class="pizza-deal-buy-white" href="https://wa.me/8149449300">Buy Now</a>
-                                    </button>
-                                   
-                                </div>
+                              
+                                
                             </div>
                         </div>
                     </div>
 
+                 <div class="pizza-card">
+                        <div class="pizza-card-content">
+                            <div class="pizza-card-image-wrapper">
+                                <img src="img/deal.jpg" alt="Combo Double Box Pizza" class="pizza-card-image">
+                            </div>
+                            <div class="pizza-card-text">
+                                <h2 class="pizza-card-title">Spicysuya package</h2>
+                              
+                            </div>
+                        </div>
+                    </div>
+                
                 </div>
             </div>
         </section>
